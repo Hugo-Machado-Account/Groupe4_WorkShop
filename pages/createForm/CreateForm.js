@@ -1,42 +1,55 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { launchCamera } from 'react-native-image-picker';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
-const CreateTicketForm = ({ navigation }) => {
+const CreateForm = ({ navigation }) => {
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState(null);
+  const [hasPermission, setHasPermission] = useState(null);
 
-  const handleSubmit = () => {
+  const categories = [
+    { label: 'Informatique', value: 'informatique' },
+    { label: 'Générale', value: 'generale' }
+  ];
 
-    console.log({ category, title, description });
-    navigation.goBack();
+  useEffect(() => {
+    (async () => {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  const handleTakePhoto = async () => {
+    if (hasPermission) {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission refusée', 'Désolé, nous avons besoin de la permission pour sauvegarder la photo.');
+        return;
+      }
+
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setPhoto(result.assets[0].uri);
+        await MediaLibrary.saveToLibraryAsync(result.assets[0].uri);
+      }
+    } else {
+      Alert.alert('Permission refusée', 'Pas de permission pour accéder à la caméra');
+    }
   };
 
-  const handleTakePhoto = () => {
-    const options = {
-      mediaType: 'photo',
-      quality: 1,
-    };
-
-    launchCamera(options)
-      .then((result) => {
-        if (result.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (result.errorCode) {
-          console.log('ImagePicker Error: ', result.errorMessage);
-          Alert.alert('Erreur', 'Impossible de prendre une photo. Veuillez réessayer.');
-        } else if (result.assets && result.assets.length > 0) {
-          setPhoto({ uri: result.assets[0].uri });
-        }
-      })
-      .catch((error) => {
-        console.log('ImagePicker Error: ', error);
-        Alert.alert('Erreur', 'Une erreur est survenue lors de la prise de photo.');
-      });
+  const handleSubmit = () => {
+    console.log({ category, title, description, photo });
+    navigation.goBack();
   };
 
   return (
@@ -58,23 +71,31 @@ const CreateTicketForm = ({ navigation }) => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Icon name="alert-circle-outline" size={24} color="#000" />
-        <Text style={styles.inputLabel}>Catégorie</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={category}
-            onValueChange={(itemValue) => setCategory(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Informatique" value="Informatique" />
-            <Picker.Item label="Générale" value="generale" />
-          </Picker>
+        <View style={styles.labelContainer}>
+          <Icon name="alert-circle-outline" size={24} color="#000" />
+          <Text style={styles.inputLabel}>Catégorie</Text>
+        </View>
+        <View style={styles.radioContainer}>
+          {categories.map((cat) => (
+            <TouchableOpacity
+              key={cat.value}
+              style={styles.radioButton}
+              onPress={() => setCategory(cat.value)}
+            >
+              <View style={styles.radio}>
+                {category === cat.value && <View style={styles.radioDot} />}
+              </View>
+              <Text style={styles.radioLabel}>{cat.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
       <View style={styles.inputContainer}>
-        <Icon name="pencil" size={24} color="#000" />
-        <Text style={styles.inputLabel}>Nom du Ticket</Text>
+        <View style={styles.labelContainer}>
+          <Icon name="pencil" size={24} color="#000" />
+          <Text style={styles.inputLabel}>Nom du Ticket</Text>
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Saisir l'intitulé de votre déclaration.."
@@ -84,8 +105,10 @@ const CreateTicketForm = ({ navigation }) => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Icon name="text" size={24} color="#000" />
-        <Text style={styles.inputLabel}>Description d'un incident</Text>
+        <View style={styles.labelContainer}>
+          <Icon name="text" size={24} color="#000" />
+          <Text style={styles.inputLabel}>Description d'un incident</Text>
+        </View>
         <TextInput
           style={[styles.input, styles.textArea]}
           placeholder="Décrire en quelques mots..."
@@ -102,7 +125,7 @@ const CreateTicketForm = ({ navigation }) => {
       </TouchableOpacity>
 
       {photo && (
-        <Image source={photo} style={styles.photoPreview} />
+        <Image source={{ uri: photo }} style={styles.photoPreview} />
       )}
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -122,7 +145,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
-    marginTop: 50,
   },
   headerItem: {
     flexDirection: 'row',
@@ -144,10 +166,15 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 20,
   },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
   inputLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginLeft: 10,
   },
   input: {
     backgroundColor: 'white',
@@ -160,6 +187,33 @@ const styles = StyleSheet.create({
   textArea: {
     height: 100,
     textAlignVertical: 'top',
+  },
+  radioContainer: {
+    marginTop: 10,
+  },
+  radioButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  radio: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#2196F3',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  radioDot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#2196F3',
+  },
+  radioLabel: {
+    fontSize: 16,
   },
   photoButton: {
     flexDirection: 'row',
@@ -195,4 +249,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateTicketForm;
+export default CreateForm;

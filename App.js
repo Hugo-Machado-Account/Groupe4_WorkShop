@@ -1,28 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import Register from "./pages/register/Register";
-import Login from "./pages/login/Login";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeAdmin from './pages/home-admin/home-admin';
-<<<<<<< HEAD
+import CreateForm from './pages/createForm/CreateForm';
 import HomeUser from './pages/home-user/home-user';
-import CreateTicket from './pages/createForm/CreateForm';
-=======
->>>>>>> 5990dcb58762273252fae62579ccda09544e8432
 
-export default function App() {
+const Stack = createStackNavigator();
+
+function App() {
   return (
-    <View style={styles.container}>
-      <CreateTicket />
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="HomeUser">
+        <Stack.Screen 
+          name="HomeUser" 
+          component={HomeUser} 
+          options={{ title: 'Je signale !' }}
+        />
+        <Stack.Screen 
+          name="CreateForm" 
+          component={CreateForm} 
+          options={{ title: 'Créer un Ticket' }}
+        />
+        <Stack.Screen 
+          name="HomeAdmin" 
+          component={HomeAdmin} 
+          options={{ title: 'Je signale !' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-  },
-});
+export default App;

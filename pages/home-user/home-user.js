@@ -1,37 +1,42 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HomeAdmin = ({ navigation }) => {
+const HomeUser = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bonjour</Text>
-      
-      <TouchableOpacity 
-        style={styles.button}
-        onPress={() => navigation.navigate('CreateTicket')}
-      >
-        <Icon name="ticket-plus" size={30} color="#fff" />
-        <Text style={styles.buttonText}>Signaler une anomalie</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.button}
-        onPress={() => navigation.navigate('ConsultTickets')}
-      >
-        <Icon name="ticket-outline" size={30} color="#fff" />
-        <Text style={styles.buttonText}>Consulter mes tickets</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Bonjour</Text>
+        
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate('CreateForm')}
+        >
+          <Icon name="ticket-plus" size={30} color="#fff" />
+          <Text style={styles.buttonText}>Signaler une anomalie</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate('ConsultTickets')}
+        >
+          <Icon name="ticket-outline" size={30} color="#fff" />
+          <Text style={styles.buttonText}>Consulter mes tickets</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f0f4f8',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f4f8',
     padding: 20,
   },
   title: {
@@ -60,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeAdmin;
+export default HomeUser;
