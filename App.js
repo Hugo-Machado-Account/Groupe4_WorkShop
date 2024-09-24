@@ -3,11 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import HomeAdmin from './pages/home-admin/home-admin';
 import HomeUser from './pages/home-user/home-user';
+import CreateTicket from './pages/createForm/CreateForm';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <HomeUser />
+      <CreateTicket />
       <StatusBar style="auto" />
     </View>
   );
