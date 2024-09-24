@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     width: '90%',
     elevation: 3,
+    justifyContent: 'center',
   },
   buttonText: {
     color: '#fff',
