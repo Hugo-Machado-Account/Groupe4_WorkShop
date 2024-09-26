@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
 
-export default function App() {
+export default function Register({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const handleRegister = () => {
+        // Logique d'inscription ici
+        console.log('User registered:', email);
+        // Rediriger vers la page de connexion après l'inscription
+        navigation.navigate('Login');
+    };
 
     return (
         <View style={styles.container}>
@@ -42,6 +49,9 @@ export default function App() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
             />
+            <View style={styles.buttonContainer}>
+                <Button title="Register" onPress={() => navigation.navigate('Login')} />
+            </View>
         </View>
     );
 }
@@ -49,10 +59,10 @@ export default function App() {
 // Style CSS
 const styles = StyleSheet.create({
     container: {
-        flex: 1,  // Prend tout l'espace disponible
-        justifyContent: 'center',  // Centre le contenu verticalement
+        flex: 1,
+        justifyContent: 'center',
         padding: 30,
-        backgroundColor: '#d3d3d3', // Couleur de fond gris
+        backgroundColor: '#d3d3d3',
     },
     title: {
         fontSize: 28,
@@ -69,10 +79,13 @@ const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
-        borderRadius:8,
+        borderRadius: 8,
         padding: 12,
         fontSize: 16,
         backgroundColor: '#fff',
         marginBottom: 16,
+    },
+    buttonContainer: {
+        marginVertical: 10, // Espacement vertical entre les boutons
     },
 });

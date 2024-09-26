@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
 
-export default function Login() {
+export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const handleLogin = () => {
+        // Logique de connexion ici (validation, API, etc.)
+        // Pour l'instant, on navigue directement à la page User
+        navigation.navigate('User');
+    };
 
     return (
         <View style={styles.container}>
@@ -25,22 +31,32 @@ export default function Login() {
             <TextInput
                 style={styles.input}
                 placeholder="Enter your password"
-                secureTextEntry={true}  // Cache le mot de passe
+                secureTextEntry={true} // Cache le mot de passe
                 autoCapitalize="none"
                 value={password}
                 onChangeText={setPassword}
             />
+            <View style={styles.buttonContainer}>
+                <Button title="Login" onPress={handleLogin} />
+            </View>
+            <View style={styles.buttonContainer}>
+                <Button title="Go to Register" onPress={() => navigation.navigate('Register')} />
+            </View>
+            <View style={styles.buttonContainer}>
+                <Button title="Go to Admin" onPress={() => navigation.navigate('Admin')} />
+            </View>
         </View>
     );
 }
 
+
+// Styles CSS
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: '100%',
-        padding: 24,
-        backgroundColor: '#d3d3d3', // Fond gris clair
-        justifyContent: 'center',  // Centre le contenu verticalement
+        padding: 20,
+        backgroundColor: '#d3d3d3', // Couleur de fond gris clair
+        justifyContent: 'center', // Centre le contenu verticalement
     },
     title: {
         fontSize: 28,
@@ -62,5 +78,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         backgroundColor: '#fff',
         marginBottom: 16,
+    },
+    buttonContainer: {
+        marginVertical: 10, // Espacement vertical entre les boutons
     },
 });
