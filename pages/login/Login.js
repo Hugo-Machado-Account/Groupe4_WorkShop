@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
-export default function Login() {
+export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const handleLogin = () => {
+        if (email === 'user@example.com' && password === 'password') {
+          navigation.replace('UserStack');
+        } else if (email === 'admin@example.com' && password === 'adminpass') {
+          navigation.replace('AdminStack');
+        } else {
+          Alert.alert('Login Failed', 'Invalid email or password');
+        }
+      };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
 
-            {/* Label Email */}
             <Text style={styles.label}>Email</Text>
             <TextInput
                 style={styles.input}
@@ -20,16 +29,26 @@ export default function Login() {
                 onChangeText={setEmail}
             />
 
-            {/* Label Password */}
             <Text style={styles.label}>Password</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Enter your password"
-                secureTextEntry={true}  // Cache le mot de passe
+                secureTextEntry={true}
                 autoCapitalize="none"
                 value={password}
                 onChangeText={setPassword}
             />
+
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+                style={styles.linkButton} 
+                onPress={() => navigation.navigate('Register')}
+            >
+                <Text style={styles.linkText}>Don't have an account? Register</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -37,10 +56,9 @@ export default function Login() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: '100%',
-        padding: 24,
-        backgroundColor: '#d3d3d3', // Fond gris clair
-        justifyContent: 'center',  // Centre le contenu verticalement
+        padding: 20,
+        backgroundColor: '#f5f5f5',
+        justifyContent: 'center',
     },
     title: {
         fontSize: 28,
@@ -56,11 +74,31 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#ddd',
         borderRadius: 8,
         padding: 12,
         fontSize: 16,
         backgroundColor: '#fff',
         marginBottom: 16,
+    },
+    button: {
+        backgroundColor: '#007AFF',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    linkButton: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    linkText: {
+        color: '#007AFF',
+        fontSize: 16,
     },
 });

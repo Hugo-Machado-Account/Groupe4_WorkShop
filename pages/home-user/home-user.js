@@ -18,7 +18,7 @@ const HomeUser = ({ navigation }) => {
         
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => navigation.navigate('ConsultTickets')}
+          onPress={() => navigation.navigate('TicketList')}
         >
           <Icon name="ticket-outline" size={30} color="#fff" />
           <Text style={styles.buttonText}>Consulter mes tickets</Text>
