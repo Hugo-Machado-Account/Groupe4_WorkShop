@@ -4,7 +4,6 @@ import { getDatabase, ref, get, child } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig, authenticateUser } from '../../config/firebaseConfig';
 
-// Initialisation de Firebase
 const app = initializeApp(firebaseConfig);
 const dbRef = ref(getDatabase(app));
 
@@ -13,16 +12,24 @@ export default function Login({ navigation }) {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
+        // içi, on va chercher l'utilisateur dans la base de données
         try {
+            // on récupère les données de la collection Utilisateur
             const snapshot = await get(child(dbRef, 'Utilisateur'));
+            // on vérifie si la collection contient des données
             if (snapshot.exists()) {
                 let userFound = false;
+                // on parcourt les données pour trouver l'utilisateur
                 snapshot.forEach((childSnapshot) => {
+                    // on récupère les données de l'utilisateur
                     const userData = childSnapshot.val();
+                    // on vérifie si l'utilisateur existe
                     if (userData.mail === email && userData.mdp === password) {
+                        // si l'utilisateur existe, on l'authentifie
                         userFound = true;
                         authenticateUser(userData)
                             .then(() => {
+                                // si l'authentification réussit, on redirige l'utilisateur vers la bonne page (AdminStack ou UserStack)
                                 if (userData.type === 'administrateur') {
                                     navigation.replace('AdminStack');
                                 } else {
@@ -30,18 +37,22 @@ export default function Login({ navigation }) {
                                 }
                             })
                             .catch((error) => {
+                                // si l'authentification échoue, on affiche un message d'erreur
                                 console.error('Authentication error:', error);
                                 Alert.alert('Error', 'An error occurred during authentication');
                             });
                     }
                 });
+                // si l'utilisateur n'est pas trouvé, on affiche un message d'erreur
                 if (!userFound) {
                     Alert.alert('Login Failed', 'Invalid email or password');
                 }
+            // si la collection ne contient pas de données, on affiche un message d'erreur
             } else {
                 Alert.alert('Error', 'No users found in the database');
             }
         } catch (error) {
+            // si une erreur survient, on affiche un message d'erreur
             console.error('Error during login:', error);
             Alert.alert('Error', 'An error occurred during login');
         }
@@ -49,12 +60,12 @@ export default function Login({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
+            <Text style={styles.title}>Se connecter</Text>
 
             <Text style={styles.label}>Email</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
+                placeholder="Entrez votre email"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -64,7 +75,7 @@ export default function Login({ navigation }) {
             <Text style={styles.label}>Password</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Enter your password"
+                placeholder="Entrez votre mot de passe"
                 secureTextEntry={true}
                 autoCapitalize="none"
                 value={password}
@@ -72,14 +83,14 @@ export default function Login({ navigation }) {
             />
 
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonText}>S'enregistez</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
                 style={styles.linkButton} 
                 onPress={() => navigation.navigate('Register')}
             >
-                <Text style={styles.linkText}>Don't have an account? Register</Text>
+                <Text style={styles.linkText}>Pas de comptes ? Enregistrez vous !</Text>
             </TouchableOpacity>
         </View>
     );
