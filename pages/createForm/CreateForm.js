@@ -3,8 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image,
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { addTicket, getLastTicketId, getCurrentUser } from '../../config/firebaseConfig';
 
 const CreateForm = ({ navigation }) => {
+  const [userId, setUserId] = useState('');
+  const [userNom, setUserNom] = useState('');
+  const [userPrenom, setUserPrenom] = useState('');
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -17,6 +21,20 @@ const CreateForm = ({ navigation }) => {
   ];
 
   useEffect(() => {
+    const loadUserData = async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        setUserId(user.id_utilisateur);
+        setUserNom(user.nom);
+        setUserPrenom(user.prenom);
+      } else {
+        // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
+        navigation.replace('Login');
+      }
+    };
+
+    loadUserData();
+
     (async () => {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
@@ -47,9 +65,35 @@ const CreateForm = ({ navigation }) => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log({ category, title, description, photo });
-    navigation.goBack();
+  const handleSubmit = async () => {
+    const ticketData = {
+      categorie: category,
+      date: Date.now(),
+      description: description,
+      etat: "Non validé",
+      id_utilisateur: userId,
+      photo_url: photo || "https://via.placeholder.com/50",
+      titre: title
+    };
+  
+    try {
+      console.log("Tentative d'ajout d'un ticket");
+      const ticketKey = await addTicket(ticketData);
+      console.log('Ticket ajouté avec la clé:', ticketKey);
+      Alert.alert("Succès", "Ticket créé avec succès!");
+      
+      // Réinitialiser le formulaire
+      setCategory('');
+      setTitle('');
+      setDescription('');
+      setPhoto(null);
+
+      // Optionnel : Naviguer vers une autre page après la création du ticket
+      navigation.navigate('TicketList'); // Assurez-vous que cette route existe
+    } catch (error) {
+      console.error('Erreur détaillée lors de l\'ajout du ticket:', error);
+      Alert.alert("Erreur", "Échec de l'ajout du ticket");
+    }
   };
 
   return (
@@ -66,7 +110,7 @@ const CreateForm = ({ navigation }) => {
       </View>
 
       <View style={styles.headerValues}>
-        <Text style={styles.headerValue}>Hugo MACHADO</Text>
+        <Text style={styles.headerValue}>{`${userPrenom} ${userNom}`}</Text>
         <Text style={styles.headerValue}>{new Date().toLocaleString()}</Text>
       </View>
 

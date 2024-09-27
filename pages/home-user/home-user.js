@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getCurrentUser } from '../../config/firebaseConfig'; // Assurez-vous que le chemin d'importation est correct
 
 const HomeUser = ({ navigation }) => {
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        setUserName(`${user.prenom} ${user.nom}`);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.title}>Bonjour</Text>
+        <Text style={styles.title}>Bonjour {userName}</Text>
         
         <TouchableOpacity 
           style={styles.button}

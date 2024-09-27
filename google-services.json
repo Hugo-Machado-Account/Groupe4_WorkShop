@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "88804593875",
+    "firebase_url": "https://bddjesignale-default-rtdb.firebaseio.com",
+    "project_id": "bddjesignale",
+    "storage_bucket": "bddjesignale.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88804593875:android:2802441db3c2bd3e6e4426",
+        "android_client_info": {
+          "package_name": "com.company.appname"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYr9XvDDUpAxYd8kMWCLspqLL6y6kiVBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

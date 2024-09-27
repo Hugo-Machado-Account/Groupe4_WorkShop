@@ -7,6 +7,7 @@ import HomeUser from './pages/home-user/home-user';
 import HomeAdmin from './pages/home-admin/home-admin';
 import TicketList from './pages/tickets-list/TicketsList';
 import CreateForm from './pages/createForm/CreateForm';
+import TicketDetails from './pages/ticket-details/TicketDetails';
 
 const Stack = createStackNavigator();
 const UserStack = createStackNavigator();
@@ -18,6 +19,7 @@ function UserStackScreen() {
       <UserStack.Screen name="HomeUser" component={HomeUser} />
       <UserStack.Screen name="TicketList" component={TicketList} />
       <UserStack.Screen name="CreateForm" component={CreateForm} />
+      <UserStack.Screen name="TicketDetails" component={TicketDetails} />
     </UserStack.Navigator>
   );
 }
@@ -28,6 +30,7 @@ function AdminStackScreen() {
       <AdminStack.Screen name="HomeAdmin" component={HomeAdmin} />
       <AdminStack.Screen name="TicketList" component={TicketList} />
       <AdminStack.Screen name="CreateForm" component={CreateForm} />
+      <AdminStack.Screen name="TicketDetails" component={TicketDetails} />
     </AdminStack.Navigator>
   );
 }

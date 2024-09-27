@@ -1,19 +1,51 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { getDatabase, ref, get, child } from 'firebase/database';
+import { initializeApp } from 'firebase/app';
+import { firebaseConfig, authenticateUser } from '../../config/firebaseConfig';
+
+// Initialisation de Firebase
+const app = initializeApp(firebaseConfig);
+const dbRef = ref(getDatabase(app));
 
 export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        if (email === 'user@example.com' && password === 'password') {
-          navigation.replace('UserStack');
-        } else if (email === 'admin@example.com' && password === 'adminpass') {
-          navigation.replace('AdminStack');
-        } else {
-          Alert.alert('Login Failed', 'Invalid email or password');
+    const handleLogin = async () => {
+        try {
+            const snapshot = await get(child(dbRef, 'Utilisateur'));
+            if (snapshot.exists()) {
+                let userFound = false;
+                snapshot.forEach((childSnapshot) => {
+                    const userData = childSnapshot.val();
+                    if (userData.mail === email && userData.mdp === password) {
+                        userFound = true;
+                        authenticateUser(userData)
+                            .then(() => {
+                                if (userData.type === 'administrateur') {
+                                    navigation.replace('AdminStack');
+                                } else {
+                                    navigation.replace('UserStack');
+                                }
+                            })
+                            .catch((error) => {
+                                console.error('Authentication error:', error);
+                                Alert.alert('Error', 'An error occurred during authentication');
+                            });
+                    }
+                });
+                if (!userFound) {
+                    Alert.alert('Login Failed', 'Invalid email or password');
+                }
+            } else {
+                Alert.alert('Error', 'No users found in the database');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            Alert.alert('Error', 'An error occurred during login');
         }
-      };
+    };
 
     return (
         <View style={styles.container}>
